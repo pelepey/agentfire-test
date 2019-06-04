@@ -1,13 +1,7 @@
 <?php
-
 /**
  * Area Test
  *
- * @link https://agentfire.com
- * @since 1.0.0
- * @package AgentFire\Plugin
- *
- * @wordpress-plugin
  * Plugin Name: AgentFire Test
  * Description: Area Test plugin
  * Plugin URI: https://agentfire.com
@@ -15,6 +9,11 @@
  * Author: Author Name
  * License: Proprietary
  * Network: false
+ *
+ * @link https://agentfire.com
+ * @since 1.0.0
+ * @package AgentFire\Plugin
+ * @wordpress-plugin
  */
 
 namespace AgentFire\Plugin;
