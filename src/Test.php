@@ -14,5 +14,7 @@ class Test {
 
 		add_action('acf/init', [$optionsPage, 'acfInitPage']);
 		add_action('acf/init', [$optionsPage, 'registerOptions']);
+
+		MapPage::getInstance()->addHooks();
 	}
 }
