@@ -31,13 +31,18 @@ class Map
         wp_enqueue_style('bootstrap', $baseBootstrap . '/css/bootstrap.min.css', [], '');
         wp_enqueue_script('bootstrap', $baseBootstrap . '/js/bootstrap.min.js', ['jquery'], '', true);
 
+        // Load mapbox and twig from CDN services, because bower doest have required compiled versions of them
         wp_enqueue_style('mapbox', '//api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css', [], '');
-        wp_enqueue_script('mapbox', '//api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js', ['jquery'], '', true);
+        wp_enqueue_script('mapbox', '//api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js', [], '', true);
 
-        wp_enqueue_script('maps-main', $base . '/assets/main.js', ['jquery'], '', true);
+        wp_enqueue_script('twig.js', '//cdn.jsdelivr.net/npm/twig@1.13.3/twig.min.js', [], '', true);
+
+        wp_enqueue_style('maps-main', $base . '/assets/main.css', [], '');
+        wp_enqueue_script('maps-main', $base . '/assets/main.js', ['jquery', 'twig.js'], '', true);
 
         wp_localize_script('maps-main', 'agentfire', [
-            'mapsToken' => Options::getInstance()->getMapboxToken()
+            'mapsToken' => Options::getInstance()->getMapboxToken(),
+            'tplBaseUrl' => Options::getInstance()->getTplBaseUrl()
         ]);
     }
 

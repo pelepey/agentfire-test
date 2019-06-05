@@ -59,4 +59,12 @@ class Options
 
         return $token;
     }
+
+    /**
+     * @return string
+     */
+    public function getTplBaseUrl()
+    {
+        return plugin_dir_url(AGENTFIRE_TEST_FILE) . 'template/test/';
+    }
 }
