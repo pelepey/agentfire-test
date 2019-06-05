@@ -6,24 +6,53 @@
  * Time: 20:22
  */
 
+/**
+ * Class PinsRepository
+ */
 class PinsRepository {
 	protected $wpdb;
 
-	public function __construct(\wpdb $wpdb) {
+    /**
+     * PinsRepository constructor.
+     * @param wpdb $wpdb
+     */
+	public function __construct(\wpdb $wpdb)
+    {
 		$this->wpdb = $wpdb;
 	}
 
-	public function getPin() {}
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+	public function getPin($id)
+    {
+	    return [];
+    }
 
-	public function addPin() {}
+    /**
+     * @param array $pin
+     *
+     * @return array
+     */
+	public function addPin(array $pin)
+    {
+	    return [];
+    }
 
-	public function removePin() {}
+    /**
+     * @param $id
+     */
+	public function removePin($id)
+    {
 
-	public function search($args) {
-		$args = wp_parse_args($args, []);
-	}
+    }
 
-	protected function getTableName() {
-		return "{$this->wpdb->prefix}_pins";
+    /**
+     * @return string
+     */
+    public function getTableName() {
+		return "{$this->wpdb->prefix}pins";
 	}
 }

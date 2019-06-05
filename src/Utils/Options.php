@@ -10,6 +10,9 @@ class Options
 {
     use Singleton;
 
+    /**
+     * @return string
+     */
     public function getMapPageSlug()
     {
         $slug = \get_field('at_map_page_slug', 'option');
@@ -21,13 +24,19 @@ class Options
         return $slug;
     }
 
+    /**
+     * @return string
+     */
     public function getPageTemplate()
     {
-        $templates = \get_field('at_map_page_template', 'option');
+        $template = \get_field('at_map_page_template', 'option');
 
-        return $templates;
+        return $template;
     }
 
+    /**
+     * @return array
+     */
     public function getAvailableTags()
     {
         $tags = \get_field('at_available_tags', 'option');
@@ -41,6 +50,9 @@ class Options
         return $tags;
     }
 
+    /**
+     * @return string
+     */
     public function getMapboxToken()
     {
         $token = \get_field('at_mapbox_token', 'option');

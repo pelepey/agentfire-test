@@ -14,18 +14,22 @@ use AgentFire\Plugin\Test\Traits\Singleton;
 class OptionsPage {
 	use Singleton;
 
+    /**
+     * @return void
+     */
 	public function acfInitPage() {
 		if ( function_exists('\acf_add_options_page') ) {
-			$option_page = \acf_add_options_page(array(
+			\acf_add_options_page(array(
 				'page_title' 	=> 'AgentFire Test',
 				'menu_title' 	=> 'AgentFire Test',
 				'menu_slug' 	=> 'agentfire-test',
 			));
-
-			return $option_page;
 		}
 	}
 
+    /**
+     * @return void
+     */
 	public function registerOptions() {
 		if( !function_exists('\acf_add_local_field_group') ) {
 		    return;
