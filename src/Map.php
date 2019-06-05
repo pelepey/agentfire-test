@@ -31,8 +31,8 @@ class Map
         wp_enqueue_style('bootstrap', $baseBootstrap . '/css/bootstrap.min.css', [], '');
         wp_enqueue_script('bootstrap', $baseBootstrap . '/js/bootstrap.min.js', ['jquery'], '', true);
 
-        wp_enqueue_style('mapbox', $mapBoxBase . '/mapbox.css', [], '');
-        wp_enqueue_script('mapbox', $mapBoxBase . '/mapbox.js', ['jquery'], '', true);
+        wp_enqueue_style('mapbox', '//api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css', [], '');
+        wp_enqueue_script('mapbox', '//api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js', ['jquery'], '', true);
 
         wp_enqueue_script('maps-main', $base . '/assets/main.js', ['jquery'], '', true);
 
