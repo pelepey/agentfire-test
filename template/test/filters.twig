@@ -2,6 +2,11 @@
     <div class="card-body">
         {% for tag in tags %}
 
+            <label>
+                <input name="tags[]" type="checkbox" value="{{ tag }}">
+                {{ tag }}
+            </label>
+
         {% else %}
             <p>There is no tags defined forr filtering.</p>
         {% endfor %}

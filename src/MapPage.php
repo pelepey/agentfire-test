@@ -14,11 +14,37 @@ class MapPage
 
     public function addHooks()
     {
-//        add_filter('posts_results', [$this, 'filterPostsResults'], 10, 2);
-        add_filter('posts_pre_query', [$this, 'postsFilter'], 10, 2);
+        add_filter('init', [$this, 'addRewriteRule'], 10, 1);
         add_filter('query_vars', [$this, 'addPublicQv'], 10, 1);
+        add_filter('posts_pre_query', [$this, 'postsFilter'], 10, 2);
+//        add_filter('posts_results', [$this, 'filterPostsResults'], 10, 2);
         add_filter('template_include', [$this, 'filterTemplate'], 10, 1);
         add_action('template_redirect', [$this, 'applyBuffering']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
+    }
+
+    public function enqueueScripts()
+    {
+        if (!$this->isTheMapPage()) {
+            return;
+        }
+
+        $base = plugin_dir_url(AGENTFIRE_TEST_FILE);
+        $base = rtrim($base, '/');
+        $baseBootstrap = $base . '/bower_components/bootstrap/dist';
+        $mapBoxBase = $base . '/bower_components/mapbox.js/';
+
+        wp_enqueue_style('bootstrap', $baseBootstrap . '/css/bootstrap.min.css', [], '');
+        wp_enqueue_script('bootstrap', $baseBootstrap . '/js/bootstrap.min.js', ['jquery'], '', true);
+
+        wp_enqueue_style('mapbox', $mapBoxBase . '/mapbox.css', [], '');
+        wp_enqueue_script('mapbox', $mapBoxBase . '/mapbox.js', ['jquery'], '', true);
+
+        wp_enqueue_script('maps-main', $base . '/assets/main.js', ['jquery'], '', true);
+
+        wp_localize_script('maps-main', 'agentfire', [
+            'mapsToken' => Options::getInstance()->getMapboxToken()
+        ]);
     }
 
     public function applyBuffering() {
@@ -39,7 +65,9 @@ class MapPage
     {
         $content = ob_get_clean();
 
-        $mapContent = Template::getInstance()->render('main.twig');
+        $mapContent = Template::getInstance()->render('main.twig', [
+            'tags' => Options::getInstance()->getAvailableTags()
+        ]);
 
         $content = $this->injectContentIntoMainTag($content, $mapContent);
 

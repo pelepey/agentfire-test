@@ -33,7 +33,7 @@ class Options
         $tags = \get_field('at_available_tags', 'option');
 
         if ($tags) {
-            $tags = explode($tags, PHP_EOL);
+            $tags = explode(PHP_EOL, $tags);
         } else {
             $tags = [];
         }
