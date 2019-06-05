@@ -16,5 +16,7 @@ class Test {
 		add_action('acf/init', [$optionsPage, 'registerOptions']);
 
 		MapPage::getInstance()->addHooks();
+
+        add_action( 'init', [PinPostType::getInstance(), 'register'], 0 );
 	}
 }
