@@ -10,7 +10,10 @@ class PinPostType
 {
     use Singleton;
 
-    function register() {
+    /**
+     * @return void
+     */
+    public function register() {
         $labels = array(
             'name'                  => _x( 'Pins', 'Post Type General Name', 'at' ),
             'singular_name'         => _x( 'Pin', 'Post Type Singular Name', 'at' ),
@@ -40,15 +43,9 @@ class PinPostType
             'items_list_navigation' => __( 'Items list navigation', 'at' ),
             'filter_items_list'     => __( 'Filter items list', 'at' ),
         );
-        $capabilities = array(
-            'edit_post'             => 'edit_pin',
-            'read_post'             => 'read_pin',
-            'delete_post'           => 'delete_pin',
-            'edit_posts'            => 'edit_pins',
-            'edit_others_posts'     => 'edit_others_pins',
-            'publish_posts'         => 'publish_pins',
-            'read_private_posts'    => 'read_private_pins',
-        );
+
+        $capabilities = $this->getCaps();
+
         $args = array(
             'label'                 => __( 'Pin', 'at' ),
             'description'           => __( 'Pins left on the map', 'at' ),
@@ -69,9 +66,57 @@ class PinPostType
             'rewrite'               => false,
             'capabilities'          => $capabilities,
             'show_in_rest'          => true,
-            'rest_base'             => 'pin',
+            'rest_base'             => 'pins',
         );
 
         register_post_type( 'pin', $args );
+    }
+
+    /**
+     * @return void
+     */
+    public function addPinCapsToRoles()
+    {
+        $rolesGrantedForAllCaps = ['administrator', 'editor'];
+        $simpleUserRoles = ['author', 'contributor', 'subscriber'];
+
+        $allCaps = $this->getCaps();
+        $crudCapsForBaseRoles = $allCaps;
+
+        unset($crudCapsForBaseRoles['edit_others_posts']);
+        unset($crudCapsForBaseRoles['read_private_posts']);
+
+        /**
+         * @param $caps string[]
+         * @param $roles string[]
+         */
+        $grantCapsForRoles = function ($caps, $roles) {
+            foreach ($roles as $role) {
+                $role = get_role($role);
+
+                foreach ($caps as $cap) {
+                    $role->add_cap($cap);
+                }
+            }
+        };
+
+        $grantCapsForRoles($allCaps, $rolesGrantedForAllCaps);
+        $grantCapsForRoles($crudCapsForBaseRoles, $simpleUserRoles);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCaps()
+    {
+        return array(
+            'edit_post'             => 'edit_pin',
+            'read_post'             => 'read_pin',
+            'delete_post'           => 'delete_pin',
+            'edit_posts'            => 'edit_pins',
+            'edit_others_posts'     => 'edit_others_pins',
+            'publish_posts'         => 'publish_pins',
+            'read_private_posts'    => 'read_private_pins',
+        );
     }
 }

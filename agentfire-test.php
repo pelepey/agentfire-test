@@ -23,6 +23,8 @@ define( 'AGENTFIRE_TEST_FILE', __FILE__ );
 
 require AGENTFIRE_TEST_PATH . 'vendor/autoload.php';
 
+register_activation_hook(AGENTFIRE_TEST_FILE, [PinPostType::getInstance(), 'addPinCapsToRoles']);
+
 add_action( 'plugins_loaded', function() {
 	new Test();
 } );
