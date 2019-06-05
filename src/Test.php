@@ -18,5 +18,6 @@ class Test {
 		MapPage::getInstance()->addHooks();
 
         add_action( 'init', [PinPostType::getInstance(), 'register'], 0 );
+        add_action( 'init', [PinTagTax::getInstance(), 'register'], 0 );
 	}
 }
