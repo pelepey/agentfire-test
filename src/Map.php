@@ -31,6 +31,9 @@ class Map
         wp_enqueue_style('bootstrap', $baseBootstrap . '/css/bootstrap.min.css', [], '');
         wp_enqueue_script('bootstrap', $baseBootstrap . '/js/bootstrap.min.js', ['jquery'], '', true);
 
+        wp_enqueue_style('chosen', $base . '/bower_components/chosen/chosen.min.css', [], '');
+        wp_enqueue_script('chosen', $base . '/bower_components/chosen/chosen.jquery.min.js', ['jquery'], '', true);
+
         // Load mapbox and twig from CDN services, because bower doest have required compiled versions of them
         wp_enqueue_style('mapbox', '//api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css', [], '');
         wp_enqueue_script('mapbox', '//api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js', [], '', true);

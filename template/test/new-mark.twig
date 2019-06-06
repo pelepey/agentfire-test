@@ -1,0 +1,51 @@
+<!-- Modal -->
+<div class="modal fade" id="at-new-pin-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create a new marker</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="at-new-marker-form" method="post" action="{{ action }}">
+                    <input type="hidden" name="meta[lng]" value="{{ coordinates.lng }}">
+                    <input type="hidden" name="meta[lat]" value="{{ coordinates.lat }}">
+                    <input type="hidden" name="status" value="publish">
+
+                    <div class="form-group">
+                        <label for="at-mark-name-input">Mark name</label>
+                        <input id="at-mark-name-input"
+                               class="form-control"
+                               type="text" name="title"
+                               value=""
+                               required
+                               minlength="3"
+                               placeholder="">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="at-mark-tag-input">Tags</label>
+
+                        <select class="form-control" name="pin-tags[]" id="at-mark-tag-input" multiple>
+                            {% for tag in tags %}
+                                <option value="{{ tag.id }}">
+                                    {{ tag.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" form="at-new-marker-form" class="btn btn-primary">Create marker</button>
+            </div>
+        </div>
+    </div>
+</div>

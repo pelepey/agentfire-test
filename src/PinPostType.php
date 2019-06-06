@@ -16,7 +16,7 @@ class PinPostType
     public function addHooks()
     {
         add_action( 'init', [$this, 'register'], 0 );
-        add_action( 'init', [$this, 'registerCoordinateRestMeta'], 0 );
+        add_action( 'rest_api_init', [$this, 'registerCoordinateRestMeta'], 0 );
     }
 
     /**
