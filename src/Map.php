@@ -42,7 +42,11 @@ class Map
 
         wp_localize_script('maps-main', 'agentfire', [
             'mapsToken' => Options::getInstance()->getMapboxToken(),
-            'tplBaseUrl' => Options::getInstance()->getTplBaseUrl()
+            'tplBaseUrl' => Options::getInstance()->getTplBaseUrl(),
+            'rest' => [
+                'root' => esc_url_raw( rest_url() ),
+                'nonce' => wp_create_nonce( 'wp_rest' )
+            ]
         ]);
     }
 

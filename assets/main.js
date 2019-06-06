@@ -1,6 +1,14 @@
 (function ($, Twig) {
     var $mapArea,
+        restBase = '/wp-json/wp/v2',
+        restNonce;
+
+    try {
+        restBase = window.agentfire.rest.root + 'wp/v2';
+        restNonce = window.agentfire.rest.nonce;
+    } catch (e) {
         restBase = '/wp-json/wp/v2';
+    }
 
     if (mapboxgl) {
         mapboxgl.accessToken = getMapToken();
@@ -21,8 +29,8 @@
     function renderPage(template) {
         $.when(
             fetchTags(),
-            fetchTags()
-        ).then(function (tagsRes) {
+            fetchPins()
+        ).then(function (tagsRes, pinsRes) {
             var tags = tagsRes[0];
 
             var page = template.render({tags: tags});
@@ -39,7 +47,22 @@
 
             map.on('click', function (e) {
                 console.log(e);
+
+                var pin = {
+                    title: 'Pin',
+                    status: 'publish',
+                    meta: {
+                        lng: e.lngLat.lng,
+                        lat: e.lngLat.lat
+                    }
+                };
+
+                addPin(pin).done(function (res) {
+                    console.log(res);
+                });
             });
+
+            console.log(pinsRes);
         });
     }
 
@@ -71,5 +94,25 @@
 
     function fetchTags() {
         return $.get(restBase + "/pin-tags");
+    }
+
+    function fetchPins() {
+        return $.get(restBase + "/pins");
+    }
+
+    /**
+     * @param pin {Object}
+     *
+     * @return
+     */
+    function addPin(pin) {
+        return $.ajax({
+            method: 'POST',
+            url: restBase + "/pins",
+            data: pin,
+            beforeSend: function ( xhr ) {
+                xhr.setRequestHeader( 'X-WP-Nonce', restNonce );
+            }
+        });
     }
 })(jQuery, Twig);

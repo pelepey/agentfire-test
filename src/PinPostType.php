@@ -13,6 +13,15 @@ class PinPostType
     /**
      * @return void
      */
+    public function addHooks()
+    {
+        add_action( 'init', [$this, 'register'], 0 );
+        add_action( 'init', [$this, 'registerCoordinateRestMeta'], 0 );
+    }
+
+    /**
+     * @return void
+     */
     public function register() {
         $labels = array(
             'name'                  => _x( 'Pins', 'Post Type General Name', 'at' ),
@@ -118,5 +127,31 @@ class PinPostType
             'publish_posts'         => 'publish_pins',
             'read_private_posts'    => 'read_private_pins',
         );
+    }
+
+    public function registerCoordinateRestMeta()
+    {
+        register_meta('post', 'lng', [
+            'object_subtype' => 'pin',
+            'description' => 'Longitude',
+            'type' => 'number',
+            'single' => true,
+            'sanitize_callback' => [$this, 'sanitizeCoordinate'],
+            'show_in_rest' => true
+        ]);
+
+        register_meta('post', 'lat', [
+            'object_subtype' => 'pin',
+            'description' => 'Latitude',
+            'type' => 'number',
+            'single' => true,
+            'sanitize_callback' => [$this, 'sanitizeCoordinate'],
+            'show_in_rest' => true
+        ]);
+    }
+
+    public function sanitizeCoordinate($meta_value, $meta_key, $object_type)
+    {
+        return floatval($meta_value);
     }
 }
