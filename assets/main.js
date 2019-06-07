@@ -9,7 +9,8 @@
         CLICK_ON_MAP: 'click-on-map',
         CLICK_ON_MARKER: 'click-on-MARKER',
         INIT_NEW_MARK_MODAL: 'init-new-mark-modal',
-        MARK_ADDED: 'mark-added'
+        MARK_ADDED: 'mark-added',
+        MARK_ADDED_ON_MAP: 'mark-added-on-map'
     };
 
     var $app = $({}),
@@ -21,9 +22,12 @@
     $app.on(EVENTS.TEMPLATES_LOADED, fetchData);
     $app.on(EVENTS.DATA_FETCHED, renderPage);
     $app.on(EVENTS.PAGE_RENDERED, renderMap);
+    $app.on(EVENTS.PAGE_RENDERED, initTagFilter);
     $app.on(EVENTS.CLICK_ON_MAP, createNewMarkerPopup);
     $app.on(EVENTS.INIT_NEW_MARK_MODAL, initTagsInput);
     $app.on(EVENTS.INIT_NEW_MARK_MODAL, initNewMarkForm);
+    $app.on(EVENTS.MARK_ADDED_ON_MAP, triggerAppliedTags); // Filter marks when one was added
+    $app.on(EVENTS.CLICK_ON_MARKER, initMarkerDetailsModal);
 
     $(document).ready(runApp);
 
@@ -45,8 +49,9 @@
     }
 
     function loadTemplates() {
-        var $mainPromise = $.Deferred();
-        var $newMarkPromise = $.Deferred();
+        var $mainPromise = $.Deferred(),
+            $newMarkPromise = $.Deferred(),
+            $markInfoPromise = $.Deferred();
 
         Twig.twig({
             id: "main",
@@ -64,7 +69,15 @@
             }
         });
 
-        return $.when($mainPromise, $newMarkPromise);
+        Twig.twig({
+            id: "mark-info",
+            href: getTemplatePath('popup-marker-info.twig'),
+            load: function () {
+                $markInfoPromise.resolve();
+            }
+        });
+
+        return $.when($mainPromise, $newMarkPromise, $markInfoPromise);
     }
 
     function fetchData() {
@@ -95,7 +108,25 @@
     }
     
     function initTagFilter() {
-        
+        var $tagFilters = $('.js-tag-filter');
+
+        $tagFilters.change(triggerAppliedTags);
+    }
+
+    function triggerAppliedTags() {
+        $app.trigger(EVENTS.APPLIED_TAGS, [getAppliedTags()]);
+    }
+
+    function getAppliedTags() {
+        var $tagFilters = $('.js-tag-filter');
+        var $checked = $tagFilters.filter(':checked');
+        var appliedTags = [];
+
+        $checked.each(function (index, tagInput) {
+            appliedTags.push( $(tagInput).val() );
+        });
+
+        return appliedTags;
     }
 
     function renderMap(e) {
@@ -103,7 +134,7 @@
             container: 'at-map', // container id
             style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
             center: [-74.50, 40], // starting position [lng, lat]
-            zoom: 9 // starting zoom
+            zoom: 0 // starting zoom
         });
 
         getPins().forEach(addToMapPin);
@@ -135,8 +166,38 @@
             var $marker = $(marker.getElement());
 
             marker.setLngLat(pin.meta);
-
             marker.addTo(map);
+
+            $marker.click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                $app.trigger(EVENTS.CLICK_ON_MARKER, [pin]);
+            });
+
+            $app.on(EVENTS.APPLIED_TAGS, toggleOnFilter);
+            $app.trigger(EVENTS.MARK_ADDED_ON_MAP);
+
+            function toggleOnFilter(e, tags) {
+                var pinTags = pin['pin-tags'] || [];
+                tags = tags || [];
+
+                if (tags.length === 0) {
+                    $marker.show();
+
+                    return;
+                }
+
+                var hasPinAnyTag = tags.every(function (tag) {
+                    return pinTags.indexOf(+tag) !== -1;
+                });
+
+                if (hasPinAnyTag) {
+                    $marker.show();
+                } else {
+                    $marker.hide();
+                }
+            }
         }
     }
 
@@ -166,6 +227,36 @@
         });
 
         $app.trigger(EVENTS.INIT_NEW_MARK_MODAL);
+    }
+
+    function initMarkerDetailsModal(e, pin) {
+        var tags = pin['pin-tags'] || [];
+        tags = tags.map(function (tagId) {
+            var tag = getTags().find(function (tag) {
+                return tag.id === tagId;
+            });
+
+            return tag.name;
+        });
+
+        var date = new Date(pin['date_gmt']);
+        date = date.getDay() + '.' + date.getMonth() + '.' + date.getFullYear();
+
+        var modal = Twig.twig({ref: 'mark-info'}).render({
+            title: pin.title.rendered,
+            tags: tags,
+            created_at: date
+        });
+
+        $('.js-modal-mark-info-wrap').html(modal);
+
+        var $modal = $('#at-modal-pin-info');
+
+        $modal.modal({
+            keyboard: false
+        });
+
+        $modal.modal('show');
     }
 
     function initTagsInput() {
@@ -227,7 +318,7 @@
     }
 
     function fetchTags() {
-        return $.get(restBase + "/pin-tags");
+        return $.get(restBase + "/pin-tags?per_page=100");
     }
 
     function fetchPins() {
